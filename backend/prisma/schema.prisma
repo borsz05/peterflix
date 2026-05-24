@@ -46,6 +46,13 @@ model User {
   createdAt    DateTime @default(now())
 }
 
+model PixelBoard {
+  id        String   @id @default(cuid())
+  key       String   @unique @default("main")
+  pixels    Json     @default("{}")
+  updatedAt DateTime @updatedAt
+}
+
 enum Role {
   ADMIN
   VIEWER

@@ -45,6 +45,12 @@ export default function Navbar() {
           <Link to="/category/memek-vicces" className="hover:text-white transition-colors">Mémek</Link>
           <Link to="/category/nagy-pillanatok" className="hover:text-white transition-colors">Nagy pillanatok</Link>
           <Link
+            to="/pixel"
+            className="hover:text-white transition-colors"
+          >
+            🎨 Pixel Csata
+          </Link>
+          <Link
             to="/meme"
             className="flex items-center gap-1.5 bg-[#e50914]/15 hover:bg-[#e50914]/25 text-[#e50914] font-semibold px-3 py-1 rounded-full transition-colors"
           >
@@ -123,7 +129,8 @@ export default function Navbar() {
                 { to: '/category/memek-vicces', label: '😂 Mémek & Vicces' },
                 { to: '/category/nagy-pillanatok', label: '⚡ Nagy pillanatok' },
                 { to: '/category/brusszel-diplomacia', label: '🇪🇺 Brüsszel' },
-              { to: '/meme', label: '😂 Mém generátor' },
+                { to: '/pixel', label: '🎨 Pixel Csata' },
+                { to: '/meme', label: '😂 Mém generátor' },
               ].map(link => (
                 <Link
                   key={link.to}

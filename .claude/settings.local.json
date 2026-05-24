@@ -18,7 +18,9 @@
       "PowerShell(node --version)",
       "PowerShell(npm --version)",
       "PowerShell(psql --version 2>$null)",
-      "PowerShell(if \\(-not $?\\) { \"PostgreSQL nincs telep�tve vagy nem �rhet� el PATH-ban\" })"
+      "PowerShell(if \\(-not $?\\) { \"PostgreSQL nincs telep�tve vagy nem �rhet� el PATH-ban\" })",
+      "Bash(npx tsc *)",
+      "Bash(npm install *)"
     ]
   }
 }
