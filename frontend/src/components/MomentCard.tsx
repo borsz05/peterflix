@@ -10,12 +10,6 @@ interface Props {
   rowFormat?: 'shorts' | 'regular'  // a sor domináns formátuma
 }
 
-function formatDuration(seconds: number) {
-  const m = Math.floor(seconds / 60)
-  const s = seconds % 60
-  return `${m}:${String(s).padStart(2, '0')}`
-}
-
 // ── Shorts (portré 9:16) kártya ──────────────────────────────────────────────
 function ShortsCard({ moment, onClick }: { moment: Moment; onClick: () => void; }) {
   const { liked, toggle } = useLikes(moment.id)
@@ -49,9 +43,8 @@ function ShortsCard({ moment, onClick }: { moment: Moment; onClick: () => void; 
         SHORTS
       </div>
 
-      {/* Viral badge / like gomb */}
+      {/* Like gomb */}
       <div className="absolute top-1.5 right-1.5 flex flex-col items-end gap-1">
-        {moment.viralScore >= 90 && <span className="text-sm leading-none">🔥</span>}
         <motion.button
           className={`text-sm leading-none opacity-0 group-hover:opacity-100 transition-opacity ${liked ? 'opacity-100' : ''}`}
           onClick={e => { e.stopPropagation(); toggle() }}
@@ -71,10 +64,6 @@ function ShortsCard({ moment, onClick }: { moment: Moment; onClick: () => void; 
       {/* Alsó szöveg */}
       <div className="absolute bottom-0 left-0 right-0 p-2">
         <p className="text-white text-[11px] font-semibold line-clamp-2 leading-tight">{moment.title}</p>
-        <div className="flex items-center justify-between mt-1">
-          <span className="text-green-400 text-[10px] font-bold">{moment.viralScore}%</span>
-          <span className="text-gray-400 text-[10px]">{formatDuration(moment.duration)}</span>
-        </div>
       </div>
     </motion.div>
   )
@@ -120,18 +109,7 @@ function RegularCard({ moment, rank, onClick }: { moment: Moment; rank?: number;
           ▶
         </button>
         <p className="text-white text-xs font-semibold line-clamp-1">{moment.title}</p>
-        <div className="flex items-center gap-2 mt-0.5">
-          <span className="text-green-400 text-xs font-bold">{moment.viralScore}% virális</span>
-          <span className="text-gray-400 text-xs">{formatDuration(moment.duration)}</span>
-        </div>
       </div>
-
-      {/* Viral badge */}
-      {moment.viralScore >= 90 && (
-        <div className="absolute top-1.5 left-1.5 bg-[#e50914] text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
-          🔥 VIRAL
-        </div>
-      )}
 
       {/* Like gomb */}
       <motion.button

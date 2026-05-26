@@ -54,13 +54,9 @@ export default function Hero({ moment }: Props) {
           </p>
 
           <div className="flex items-center gap-3 mb-6">
-            <span className="text-green-400 font-bold">{moment.viralScore}% virális</span>
-            <span className="text-gray-400 text-sm">•</span>
+            <span className="text-gray-400 text-sm">▶ Magyar Péter Hivatalos</span>
+            <span className="text-gray-600">•</span>
             <span className="text-gray-400 text-sm">{moment.year}</span>
-            <span className="text-gray-400 text-sm">•</span>
-            <span className="text-gray-400 text-sm">
-              👁 {moment.viewCount?.toLocaleString('hu')} megtekintés
-            </span>
           </div>
 
           <div className="flex gap-3">

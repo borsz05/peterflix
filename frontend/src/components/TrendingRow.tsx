@@ -7,12 +7,6 @@ interface Props {
   moments: Moment[]  // top 10, már viralScore szerint rendezve
 }
 
-function formatDuration(seconds: number) {
-  const m = Math.floor(seconds / 60)
-  const s = seconds % 60
-  return `${m}:${String(s).padStart(2, '0')}`
-}
-
 function TrendingCard({ moment, rank }: { moment: Moment; rank: number }) {
   const [modalOpen, setModalOpen] = useState(false)
   const thumb = moment.thumbnailUrl ||
@@ -78,10 +72,6 @@ function TrendingCard({ moment, rank }: { moment: Moment; rank: number }) {
             <p className="text-white text-[10px] sm:text-xs font-semibold line-clamp-2 leading-tight">
               {moment.title}
             </p>
-            <div className="flex items-center justify-between mt-0.5">
-              <span className="text-green-400 text-[10px] font-bold">{moment.viralScore}%</span>
-              <span className="text-gray-400 text-[10px]">{formatDuration(moment.duration)}</span>
-            </div>
           </div>
 
           {/* Top 3 crown */}
