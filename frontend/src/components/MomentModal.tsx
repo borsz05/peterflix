@@ -23,7 +23,6 @@ function ShareButtons({ moment }: { moment: Moment }) {
 
   return (
     <div className="mt-4 pt-4 border-t border-white/8">
-      <p className="text-gray-500 text-xs mb-2.5 uppercase tracking-wide font-medium">Megosztás</p>
       <div className="flex flex-wrap gap-2">
         <button
           onClick={copyLink}
@@ -133,8 +132,8 @@ export default function MomentModal({ moment, onClose }: Props) {
                 {moment.title}
               </h2>
 
-              {/* Csatorna + kategória */}
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-2">
+              {/* Csatorna */}
+              <div className="mt-2">
                 <a
                   href={YT_CHANNEL_URL}
                   target="_blank"
@@ -144,17 +143,6 @@ export default function MomentModal({ moment, onClose }: Props) {
                   <span className="text-xs">▶</span>
                   <span>{YT_CHANNEL}</span>
                 </a>
-                {moment.category && (
-                  <>
-                    <span className="text-gray-700">·</span>
-                    <span
-                      className="px-2 py-0.5 rounded text-xs font-medium"
-                      style={{ background: moment.category.color + '22', color: moment.category.color }}
-                    >
-                      {moment.category.name}
-                    </span>
-                  </>
-                )}
               </div>
 
               {/* Share */}

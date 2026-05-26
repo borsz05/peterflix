@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Moment } from '../types'
-import { useLikes } from '../hooks/useLikes'
 
 // ── Egy videó slide ──────────────────────────────────────────────────────────
 interface SlideProps {
@@ -14,7 +13,6 @@ interface SlideProps {
 }
 
 function VideoSlide({ moment, isActive, onNext, onPrev, isFirst, isLast }: SlideProps) {
-  const { liked, toggle: toggleLike } = useLikes(moment.id)
   const thumbUrl     = `https://img.youtube.com/vi/${moment.youtubeId}/maxresdefault.jpg`
   const fallbackThumb = `https://img.youtube.com/vi/${moment.youtubeId}/hqdefault.jpg`
   const [imgSrc, setImgSrc]       = useState(thumbUrl)
@@ -125,26 +123,6 @@ function VideoSlide({ moment, isActive, onNext, onPrev, isFirst, isLast }: Slide
         className="absolute right-3 sm:right-4 bottom-[80px] flex flex-col gap-4 items-center"
         style={{ zIndex: 30 }}
       >
-        {/* Like */}
-        <motion.button
-          onClick={toggleLike}
-          className="flex flex-col items-center gap-1"
-          whileTap={{ scale: 0.82 }}
-        >
-          <motion.div
-            className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-2xl shadow-lg transition-colors ${
-              liked ? 'bg-red-500/50 border border-red-400' : 'bg-black/50 border border-white/20 backdrop-blur-sm'
-            }`}
-            animate={liked ? { scale: [1, 1.25, 1] } : {}}
-            transition={{ duration: 0.3 }}
-          >
-            {liked ? '❤️' : '🤍'}
-          </motion.div>
-          <span className="text-white text-[11px] font-medium drop-shadow">
-            {liked ? 'Kedvelt' : 'Like'}
-          </span>
-        </motion.button>
-
         {/* Megosztás */}
         <button onClick={handleShare} className="flex flex-col items-center gap-1">
           <motion.div
