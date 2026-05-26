@@ -486,9 +486,6 @@ export default function PixelCanvas() {
             <h1 className="text-lg font-black text-white leading-tight">
               🎨 Pixel<span className="text-[#e50914]">Csata</span>
             </h1>
-            <p className="text-gray-600 text-[10px]">
-              Közösségi vászon · {BOARD_SIZE}×{BOARD_SIZE} · valós idejű szinkron
-            </p>
           </div>
 
           {/* ═══ Fő terület — wrapperRef méri az egész területet ═══ */}
