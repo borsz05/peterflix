@@ -1,19 +1,10 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Moment } from '../types'
-import { useLikes } from '../hooks/useLikes'
 
 interface Props {
   moment: Moment
   onClose: () => void
-}
-
-function formatDuration(s: number) {
-  const h = Math.floor(s / 3600)
-  const m = Math.floor((s % 3600) / 60)
-  const sec = s % 60
-  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
-  return `${m}:${String(sec).padStart(2, '0')}`
 }
 
 const YT_CHANNEL = 'Magyar Péter Hivatalos'
@@ -23,11 +14,8 @@ const YT_CHANNEL_URL = 'https://www.youtube.com/@magyarPeter'
 function ShareButtons({ moment }: { moment: Moment }) {
   const [copied, setCopied] = useState(false)
 
-  const momentUrl  = `${window.location.origin}/moment/${moment.id}`
-  const tweetText  = `„${moment.title}" — péterflix.hu #PéterFlix #MagyarPéter`
-  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(momentUrl)}`
-
   async function copyLink() {
+    const momentUrl = `${window.location.origin}/moment/${moment.id}`
     await navigator.clipboard.writeText(momentUrl)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
@@ -37,14 +25,6 @@ function ShareButtons({ moment }: { moment: Moment }) {
     <div className="mt-4 pt-4 border-t border-white/8">
       <p className="text-gray-500 text-xs mb-2.5 uppercase tracking-wide font-medium">Megosztás</p>
       <div className="flex flex-wrap gap-2">
-        <a
-          href={twitterUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1.5 bg-black border border-white/15 hover:border-white/30 text-white text-xs font-medium px-3 py-1.5 rounded-full transition-colors"
-        >
-          <span className="font-black text-sm">𝕏</span> Tweet
-        </a>
         <button
           onClick={copyLink}
           className="flex items-center gap-1.5 bg-white/8 hover:bg-white/12 text-white text-xs font-medium px-3 py-1.5 rounded-full transition-colors"
@@ -66,7 +46,6 @@ function ShareButtons({ moment }: { moment: Moment }) {
 
 // ── Fő modal ──────────────────────────────────────────────────────────────────
 export default function MomentModal({ moment, onClose }: Props) {
-  const { liked, toggle: toggleLike } = useLikes(moment.id)
   const isShorts = moment.platform === 'shorts'
 
   useEffect(() => {
@@ -149,46 +128,22 @@ export default function MomentModal({ moment, onClose }: Props) {
 
             {/* Info panel */}
             <div className="p-4 sm:p-5">
-              {/* Cím + like */}
-              <div className="flex items-start justify-between gap-3">
-                <h2 className="text-white text-lg sm:text-xl font-bold leading-tight flex-1 min-w-0 pr-2">
-                  {moment.title}
-                </h2>
-                <motion.button
-                  onClick={toggleLike}
-                  className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
-                    liked
-                      ? 'bg-red-500/15 border-red-500/40 text-red-400'
-                      : 'bg-white/8 border-white/15 text-gray-300 hover:border-white/30 hover:text-white'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <span>{liked ? '❤️' : '🤍'}</span>
-                  <span>{liked ? 'Kedvelt' : 'Kedvelés'}</span>
-                </motion.button>
-              </div>
+              {/* Cím */}
+              <h2 className="text-white text-lg sm:text-xl font-bold leading-tight">
+                {moment.title}
+              </h2>
 
-              {/* Meta: csatorna + alapadatok */}
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-2 text-sm">
-                {/* Csatorna */}
+              {/* Csatorna + kategória */}
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-2">
                 <a
                   href={YT_CHANNEL_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-[#e50914] hover:text-red-400 transition-colors font-medium"
+                  className="flex items-center gap-1 text-[#e50914] hover:text-red-400 transition-colors text-sm font-medium"
                 >
                   <span className="text-xs">▶</span>
                   <span>{YT_CHANNEL}</span>
                 </a>
-                <span className="text-gray-700">·</span>
-                <span className="text-gray-400">{moment.year}</span>
-                {moment.duration > 0 && (
-                  <>
-                    <span className="text-gray-700">·</span>
-                    <span className="text-gray-400">{formatDuration(moment.duration)}</span>
-                  </>
-                )}
                 {moment.category && (
                   <>
                     <span className="text-gray-700">·</span>
