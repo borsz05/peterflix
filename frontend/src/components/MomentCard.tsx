@@ -71,7 +71,6 @@ function ShortsCard({ moment, onClick }: { moment: Moment; onClick: () => void; 
 
 // ── Regular (fekvő 16:9) kártya ──────────────────────────────────────────────
 function RegularCard({ moment, rank, onClick }: { moment: Moment; rank?: number; onClick: () => void }) {
-  const { liked, toggle } = useLikes(moment.id)
   const thumb = moment.thumbnailUrl ||
     `https://img.youtube.com/vi/${moment.youtubeId}/mqdefault.jpg`
 
@@ -111,14 +110,6 @@ function RegularCard({ moment, rank, onClick }: { moment: Moment; rank?: number;
         <p className="text-white text-xs font-semibold line-clamp-1">{moment.title}</p>
       </div>
 
-      {/* Like gomb */}
-      <motion.button
-        className={`absolute top-1.5 right-1.5 text-sm leading-none opacity-0 group-hover:opacity-100 transition-opacity ${liked ? '!opacity-100' : ''}`}
-        onClick={e => { e.stopPropagation(); toggle() }}
-        whileTap={{ scale: 0.8 }}
-      >
-        {liked ? '❤️' : '🤍'}
-      </motion.button>
     </motion.div>
   )
 }
