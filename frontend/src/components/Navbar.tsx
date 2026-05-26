@@ -38,24 +38,11 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop nav linkek */}
+        {/* Desktop nav linkek — 3 menüpont */}
         <div className="hidden md:flex items-center gap-5 text-sm text-gray-300">
-          <Link to="/" className="hover:text-white transition-colors">Főoldal</Link>
-          <Link to="/category/abszolut-filmszinhaz" className="hover:text-white transition-colors">Filmszínház</Link>
-          <Link to="/category/memek-vicces" className="hover:text-white transition-colors">Mémek</Link>
-          <Link to="/category/nagy-pillanatok" className="hover:text-white transition-colors">Nagy pillanatok</Link>
-          <Link
-            to="/pixel"
-            className="hover:text-white transition-colors"
-          >
-            🎨 Pixel Csata
-          </Link>
-          <Link
-            to="/meme"
-            className="flex items-center gap-1.5 bg-[#e50914]/15 hover:bg-[#e50914]/25 text-[#e50914] font-semibold px-3 py-1 rounded-full transition-colors"
-          >
-            😂 Mém generátor
-          </Link>
+          <Link to="/" className="hover:text-white transition-colors">📱 Shorts</Link>
+          <Link to="/videos" className="hover:text-white transition-colors">🎬 Videók</Link>
+          <Link to="/pixel" className="hover:text-white transition-colors">🎨 Pixelart</Link>
         </div>
 
         {/* Spacer */}
@@ -82,7 +69,7 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Hamburger — mobile */}
+        {/* Hamburger — csak mobilon (category/moment oldalakon) */}
         <button
           className="sm:hidden flex flex-col gap-1.5 w-6 h-5 justify-center items-end ml-1"
           onClick={() => setMenuOpen(prev => !prev)}
@@ -90,7 +77,7 @@ export default function Navbar() {
         >
           <motion.span
             className="block h-0.5 bg-white rounded"
-            animate={{ width: menuOpen ? '100%' : '100%', rotate: menuOpen ? 45 : 0, y: menuOpen ? 8 : 0 }}
+            animate={{ width: '100%', rotate: menuOpen ? 45 : 0, y: menuOpen ? 8 : 0 }}
             style={{ width: '100%' }}
           />
           <motion.span
@@ -106,7 +93,7 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile menü */}
+      {/* Mobile legördülő menü */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -121,16 +108,12 @@ export default function Navbar() {
               <SearchBar />
             </div>
 
-            {/* Linkek */}
+            {/* Linkek — 3 menüpont */}
             <nav className="flex flex-col gap-3 text-sm">
               {[
-                { to: '/', label: 'Főoldal' },
-                { to: '/category/abszolut-filmszinhaz', label: '🎬 Filmszínház' },
-                { to: '/category/memek-vicces', label: '😂 Mémek & Vicces' },
-                { to: '/category/nagy-pillanatok', label: '⚡ Nagy pillanatok' },
-                { to: '/category/brusszel-diplomacia', label: '🇪🇺 Brüsszel' },
-                { to: '/pixel', label: '🎨 Pixel Csata' },
-                { to: '/meme', label: '😂 Mém generátor' },
+                { to: '/', label: '📱 Shorts' },
+                { to: '/videos', label: '🎬 Videók' },
+                { to: '/pixel', label: '🎨 Pixelart' },
               ].map(link => (
                 <Link
                   key={link.to}

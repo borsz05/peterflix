@@ -1,15 +1,17 @@
-import { useMoments } from '../hooks/useMoments'
-import TikTokFeed from '../components/TikTokFeed'
+import { useMoments, useCategories } from '../hooks/useMoments'
+import Hero from '../components/Hero'
+import MomentRow from '../components/MomentRow'
+import LegalFooter from '../components/LegalFooter'
 import { motion } from 'framer-motion'
 
 export default function Home() {
   const { moments, loading } = useMoments()
+  const { categories } = useCategories()
 
-  // Betöltés képernyő
   if (loading) {
     return (
       <div
-        className="flex items-center justify-center bg-black"
+        className="flex items-center justify-center bg-[#0a0a0a]"
         style={{ height: '100dvh' }}
       >
         <div className="text-center">
@@ -35,8 +37,50 @@ export default function Home() {
     )
   }
 
-  // Virális score szerint rendezve — legjobb tartalom elöl
-  const sorted = [...moments].sort((a, b) => b.viralScore - a.viralScore)
+  // Csak a hosszú (regular) videók
+  const regular = moments.filter(m => m.platform !== 'shorts')
 
-  return <TikTokFeed moments={sorted} />
+  // Hero: az első isHero jelölt, vagy a legjobb viral score-ú
+  const heroMoment =
+    regular.find(m => m.isHero) ??
+    [...regular].sort((a, b) => b.viralScore - a.viralScore)[0]
+
+  // Kategóriánként csoportosítás
+  const grouped = categories
+    .map(cat => ({
+      category: cat,
+      moments: regular.filter(m => m.category?.id === cat.id),
+    }))
+    .filter(g => g.moments.length > 0)
+
+  return (
+    <div className="bg-[#0a0a0a] min-h-screen">
+      {/* Hero — TopHeader (fixed 56px) fölé nyúlik */}
+      {heroMoment && (
+        <Hero moment={heroMoment} />
+      )}
+
+      {/* Kategória sorok */}
+      <div className="pb-20 md:pb-10">
+        {grouped.map(g => (
+          <MomentRow
+            key={g.category.id}
+            title={g.category.name}
+            moments={g.moments}
+            accentColor={g.category.color}
+            forceFormat="regular"
+          />
+        ))}
+
+        {grouped.length === 0 && (
+          <div className="text-gray-500 text-center py-24">
+            <div className="text-5xl mb-4">📭</div>
+            <p>Még nincsenek videók.</p>
+          </div>
+        )}
+      </div>
+
+      <LegalFooter />
+    </div>
+  )
 }

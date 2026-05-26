@@ -53,18 +53,16 @@ async function main() {
 
   const [filmszinhaz, memek, nagy, brusszel] = categories
 
-  // --- MOMENTUMOK ---
-  const moments = [
+  // ─────────────────────────────────────────────────────────────
+  // SHORTS — rövid videók (9:16)
+  // ─────────────────────────────────────────────────────────────
+  const shorts = [
+    // ── Meglévő shorts ──
     {
       title: 'Osztálykirándulósokat fogad az osztrák kancellár',
       description: 'Magyar Péter és csapata Bécsben az osztrák kancellárnál — a fogadtatás kissé osztálykirándulós hangulatot idéz.',
       youtubeId: 'ciplNx-MkWc',
-      platform: 'shorts',
-      duration: 60,
-      year: 2025,
-      viralScore: 92,
-      viewCount: 850000,
-      isHero: false,
+      duration: 60, year: 2025, viralScore: 92, viewCount: 850000, isHero: false,
       tags: ['brüsszel', 'diplomácia', 'ausztria', 'vicces'],
       categoryId: brusszel.id,
     },
@@ -72,12 +70,7 @@ async function main() {
       title: 'Magyar Peti a vasutas',
       description: 'Péter vonaton, vasutasok között — mém-potenciál maximumon.',
       youtubeId: 'X4fnJJrBW6Y',
-      platform: 'shorts',
-      duration: 45,
-      year: 2025,
-      viralScore: 88,
-      viewCount: 620000,
-      isHero: false,
+      duration: 45, year: 2025, viralScore: 88, viewCount: 620000, isHero: false,
       tags: ['vasút', 'közlekedés', 'lázár', 'vicces'],
       categoryId: memek.id,
     },
@@ -85,12 +78,7 @@ async function main() {
       title: 'Bromance Donald Tuskal – Part 1',
       description: 'Magyar Péter és Donald Tusk találkozója — a kémia azonnal megvolt.',
       youtubeId: 'R6Y7X7nIi-g',
-      platform: 'shorts',
-      duration: 55,
-      year: 2025,
-      viralScore: 95,
-      viewCount: 1100000,
-      isHero: true,
+      duration: 55, year: 2025, viralScore: 95, viewCount: 1100000, isHero: true,
       tags: ['tusk', 'lengyelország', 'diplomácia', 'bromance'],
       categoryId: brusszel.id,
     },
@@ -98,12 +86,7 @@ async function main() {
       title: 'Magyar Peti letörli a Netflixet és átvált a PéterFlixre',
       description: 'A pillanat ami miatt ez az app létezik. Péter maga törli le a Netflixet.',
       youtubeId: 'JgFz1z0q83U',
-      platform: 'shorts',
-      duration: 30,
-      year: 2025,
-      viralScore: 99,
-      viewCount: 2400000,
-      isHero: false,
+      duration: 30, year: 2025, viralScore: 99, viewCount: 2400000, isHero: false,
       tags: ['netflix', 'péterflix', 'meta', 'vicces', 'mém'],
       categoryId: filmszinhaz.id,
     },
@@ -111,12 +94,7 @@ async function main() {
       title: 'A sportfan',
       description: 'Magyar Péter sportesemények között — emberi oldal, maxikifejezések.',
       youtubeId: 'GleCgcX-fYI',
-      platform: 'shorts',
-      duration: 40,
-      year: 2025,
-      viralScore: 84,
-      viewCount: 490000,
-      isHero: false,
+      duration: 40, year: 2025, viralScore: 84, viewCount: 490000, isHero: false,
       tags: ['sport', 'emberi', 'reakció'],
       categoryId: memek.id,
     },
@@ -124,12 +102,7 @@ async function main() {
       title: 'MP Sherlock Holmes',
       description: 'Péter nyomozó módban — a dedukció bajnoka.',
       youtubeId: 'YE4SYGSuViU',
-      platform: 'shorts',
-      duration: 50,
-      year: 2025,
-      viralScore: 91,
-      viewCount: 780000,
-      isHero: false,
+      duration: 50, year: 2025, viralScore: 91, viewCount: 780000, isHero: false,
       tags: ['sherlock', 'nyomozás', 'vicces', 'mém'],
       categoryId: filmszinhaz.id,
     },
@@ -137,12 +110,7 @@ async function main() {
       title: 'A tárlatvezető',
       description: 'Magyar Péter tárlatot vezet — műtárgyak, magyarázatok, arcreakciók.',
       youtubeId: 'fbUPs7DjgUA',
-      platform: 'shorts',
-      duration: 55,
-      year: 2025,
-      viralScore: 87,
-      viewCount: 560000,
-      isHero: false,
+      duration: 55, year: 2025, viralScore: 87, viewCount: 560000, isHero: false,
       tags: ['kultúra', 'múzeum', 'vicces'],
       categoryId: filmszinhaz.id,
     },
@@ -150,12 +118,7 @@ async function main() {
       title: 'A kordonbontó',
       description: 'A Karmelita kordonjainak lebontása — szimbolikus és abszolút filmszínházi pillanat.',
       youtubeId: 'rYHdO-KY8FI',
-      platform: 'shorts',
-      duration: 60,
-      year: 2026,
-      viralScore: 97,
-      viewCount: 1800000,
-      isHero: false,
+      duration: 60, year: 2026, viralScore: 97, viewCount: 1800000, isHero: false,
       tags: ['karmelita', 'kordon', 'rendszerváltás', 'ikonikus'],
       categoryId: nagy.id,
     },
@@ -163,12 +126,7 @@ async function main() {
       title: 'Tovarisi konyec elvtársak',
       description: 'A NER vége — Péter jelszava amivel lezárta az Orbán-korszakot.',
       youtubeId: 'S9R1UyeOwRM',
-      platform: 'shorts',
-      duration: 45,
-      year: 2026,
-      viralScore: 98,
-      viewCount: 2100000,
-      isHero: false,
+      duration: 45, year: 2026, viralScore: 98, viewCount: 2100000, isHero: false,
       tags: ['tovarisi', 'konyec', 'rendszerváltás', 'ikonikus', 'mém'],
       categoryId: nagy.id,
     },
@@ -176,12 +134,7 @@ async function main() {
       title: 'Rakpart',
       description: 'A rakparti pillanat — Budapest, Duna, Péter.',
       youtubeId: 'xDhALu5JBVk',
-      platform: 'shorts',
-      duration: 35,
-      year: 2025,
-      viralScore: 86,
-      viewCount: 540000,
-      isHero: false,
+      duration: 35, year: 2025, viralScore: 86, viewCount: 540000, isHero: false,
       tags: ['budapest', 'duna', 'hangulat'],
       categoryId: filmszinhaz.id,
     },
@@ -189,12 +142,7 @@ async function main() {
       title: 'MP a DJ',
       description: 'Magyar Péter DJ pultban — ezt senki nem várta.',
       youtubeId: 'Zj_w7IvQm0c',
-      platform: 'shorts',
-      duration: 40,
-      year: 2025,
-      viralScore: 93,
-      viewCount: 920000,
-      isHero: false,
+      duration: 40, year: 2025, viralScore: 93, viewCount: 920000, isHero: false,
       tags: ['dj', 'zene', 'meglepő', 'vicces', 'mém'],
       categoryId: memek.id,
     },
@@ -202,12 +150,7 @@ async function main() {
       title: 'Let it happen',
       description: 'A győzelem pillanata — let it happen.',
       youtubeId: 'ZfUOXLCHQzw',
-      platform: 'shorts',
-      duration: 50,
-      year: 2026,
-      viralScore: 96,
-      viewCount: 1650000,
-      isHero: false,
+      duration: 50, year: 2026, viralScore: 96, viewCount: 1650000, isHero: false,
       tags: ['győzelem', 'választás', 'ikonikus', 'érzelmek'],
       categoryId: nagy.id,
     },
@@ -215,20 +158,174 @@ async function main() {
       title: 'Fideszes golyó',
       description: 'A golyó amit a Fidesz lőtt ki — visszajött.',
       youtubeId: '3FnNHKwU_5U',
-      platform: 'shorts',
-      duration: 45,
-      year: 2025,
-      viralScore: 90,
-      viewCount: 710000,
-      isHero: false,
+      duration: 45, year: 2025, viralScore: 90, viewCount: 710000, isHero: false,
       tags: ['fidesz', 'visszavágás', 'vicces', 'mém'],
       categoryId: memek.id,
     },
+    // ── Új shorts (admin panelben névvel látható el) ──
+    {
+      title: 'Shorts #01 — cím szerkesztendő',
+      description: '',
+      youtubeId: 'IGitoKOVDVI',
+      duration: 60, year: 2025, viralScore: 80, viewCount: 0, isHero: false,
+      tags: [],
+      categoryId: filmszinhaz.id,
+    },
+    {
+      title: 'Shorts #02 — cím szerkesztendő',
+      description: '',
+      youtubeId: '1KxZ73brv30',
+      duration: 60, year: 2025, viralScore: 80, viewCount: 0, isHero: false,
+      tags: [],
+      categoryId: memek.id,
+    },
+    {
+      title: 'Shorts #03 — cím szerkesztendő',
+      description: '',
+      youtubeId: 'nnFxYwJuv_E',
+      duration: 60, year: 2025, viralScore: 80, viewCount: 0, isHero: false,
+      tags: [],
+      categoryId: nagy.id,
+    },
+    {
+      title: 'Shorts #04 — cím szerkesztendő',
+      description: '',
+      youtubeId: '6lyFLqhOmMQ',
+      duration: 60, year: 2025, viralScore: 80, viewCount: 0, isHero: false,
+      tags: [],
+      categoryId: brusszel.id,
+    },
+    {
+      title: 'Shorts #05 — cím szerkesztendő',
+      description: '',
+      youtubeId: 'YfAhBfBkNIo',
+      duration: 60, year: 2025, viralScore: 80, viewCount: 0, isHero: false,
+      tags: [],
+      categoryId: filmszinhaz.id,
+    },
+    {
+      title: 'Shorts #06 — cím szerkesztendő',
+      description: '',
+      youtubeId: '_cbD_KsMG84',
+      duration: 60, year: 2025, viralScore: 80, viewCount: 0, isHero: false,
+      tags: [],
+      categoryId: memek.id,
+    },
+    {
+      title: 'Shorts #07 — cím szerkesztendő',
+      description: '',
+      youtubeId: 'iSI5mMZavoY',
+      duration: 60, year: 2025, viralScore: 80, viewCount: 0, isHero: false,
+      tags: [],
+      categoryId: nagy.id,
+    },
+    {
+      title: 'Shorts #08 — cím szerkesztendő',
+      description: '',
+      youtubeId: 'OJ1gbMsCFBk',
+      duration: 60, year: 2025, viralScore: 80, viewCount: 0, isHero: false,
+      tags: [],
+      categoryId: brusszel.id,
+    },
+    {
+      title: 'Shorts #09 — cím szerkesztendő',
+      description: '',
+      youtubeId: 'afvZZDMeLLY',
+      duration: 60, year: 2025, viralScore: 80, viewCount: 0, isHero: false,
+      tags: [],
+      categoryId: filmszinhaz.id,
+    },
+    {
+      title: 'Shorts #10 — cím szerkesztendő',
+      description: '',
+      youtubeId: 'N7BeiHiDRPE',
+      duration: 60, year: 2025, viralScore: 80, viewCount: 0, isHero: false,
+      tags: [],
+      categoryId: memek.id,
+    },
+    {
+      title: 'Shorts #11 — cím szerkesztendő',
+      description: '',
+      youtubeId: '7BdP0L3frBA',
+      duration: 60, year: 2025, viralScore: 80, viewCount: 0, isHero: false,
+      tags: [],
+      categoryId: nagy.id,
+    },
+    {
+      title: 'Shorts #12 — cím szerkesztendő',
+      description: '',
+      youtubeId: 'j-1LtJI9OLw',
+      duration: 60, year: 2025, viralScore: 80, viewCount: 0, isHero: false,
+      tags: [],
+      categoryId: brusszel.id,
+    },
   ]
 
-  for (const moment of moments) {
-    await prisma.moment.create({ data: moment })
-    console.log(`✅ Létrehozva: ${moment.title}`)
+  // ─────────────────────────────────────────────────────────────
+  // REGULAR — hosszú videók (16:9) — placeholder-ek, admin panelben nevezzük el
+  // YouTube ID-t és nevet az admin felületen lehet módosítani
+  // ─────────────────────────────────────────────────────────────
+  const regulars = [
+    {
+      title: 'Hosszú videó #1 — cím szerkesztendő',
+      description: 'Placeholder — cseréld le a YouTube ID-t és a nevet az admin panelben.',
+      youtubeId: 'ciplNx-MkWc',   // ideiglenesen meglévő ID — cseréld le
+      duration: 1800, year: 2025, viralScore: 85, viewCount: 0, isHero: false,
+      tags: [],
+      categoryId: filmszinhaz.id,
+    },
+    {
+      title: 'Hosszú videó #2 — cím szerkesztendő',
+      description: 'Placeholder — cseréld le a YouTube ID-t és a nevet az admin panelben.',
+      youtubeId: 'R6Y7X7nIi-g',
+      duration: 2400, year: 2025, viralScore: 88, viewCount: 0, isHero: false,
+      tags: [],
+      categoryId: nagy.id,
+    },
+    {
+      title: 'Hosszú videó #3 — cím szerkesztendő',
+      description: 'Placeholder — cseréld le a YouTube ID-t és a nevet az admin panelben.',
+      youtubeId: 'X4fnJJrBW6Y',
+      duration: 3600, year: 2025, viralScore: 82, viewCount: 0, isHero: true,
+      tags: [],
+      categoryId: brusszel.id,
+    },
+    {
+      title: 'Hosszú videó #4 — cím szerkesztendő',
+      description: 'Placeholder — cseréld le a YouTube ID-t és a nevet az admin panelben.',
+      youtubeId: 'ZfUOXLCHQzw',
+      duration: 2100, year: 2026, viralScore: 91, viewCount: 0, isHero: false,
+      tags: [],
+      categoryId: memek.id,
+    },
+    {
+      title: 'Hosszú videó #5 — cím szerkesztendő',
+      description: 'Placeholder — cseréld le a YouTube ID-t és a nevet az admin panelben.',
+      youtubeId: 'S9R1UyeOwRM',
+      duration: 2700, year: 2026, viralScore: 94, viewCount: 0, isHero: false,
+      tags: [],
+      categoryId: nagy.id,
+    },
+    {
+      title: 'Hosszú videó #6 — cím szerkesztendő',
+      description: 'Placeholder — cseréld le a YouTube ID-t és a nevet az admin panelben.',
+      youtubeId: 'rYHdO-KY8FI',
+      duration: 1920, year: 2025, viralScore: 87, viewCount: 0, isHero: false,
+      tags: [],
+      categoryId: filmszinhaz.id,
+    },
+  ]
+
+  // Shorts beírása
+  for (const moment of shorts) {
+    await prisma.moment.create({ data: { ...moment, platform: 'shorts' } })
+    console.log(`📱 Shorts: ${moment.title}`)
+  }
+
+  // Regular videók beírása
+  for (const moment of regulars) {
+    await prisma.moment.create({ data: { ...moment, platform: 'regular' } })
+    console.log(`🎬 Regular: ${moment.title}`)
   }
 
   // Admin user upsert
@@ -243,7 +340,8 @@ async function main() {
     },
   })
 
-  console.log(`\n🎬 ${moments.length} moment sikeresen beseedelve!`)
+  console.log(`\n📱 ${shorts.length} shorts beseedelve!`)
+  console.log(`🎬 ${regulars.length} hosszú videó (placeholder) beseedelve!`)
   console.log(`📁 ${categories.length} kategória létrehozva!`)
   console.log(`✅ Admin: ${process.env.ADMIN_EMAIL ?? 'admin@peterflix.hu'}`)
 }

@@ -3,12 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import type { Moment } from '../types'
 import { useLikes } from '../hooks/useLikes'
 
-function formatDuration(s: number) {
-  const m = Math.floor(s / 60)
-  const sec = s % 60
-  return `${m}:${String(sec).padStart(2, '0')}`
-}
-
 // ── Egy videó slide ──────────────────────────────────────────────────────────
 interface SlideProps {
   moment: Moment
@@ -131,18 +125,6 @@ function VideoSlide({ moment, isActive, onNext, onPrev, isFirst, isLast }: Slide
         className="absolute right-3 sm:right-4 bottom-[80px] flex flex-col gap-4 items-center"
         style={{ zIndex: 30 }}
       >
-        {/* Viral score */}
-        <div className="flex flex-col items-center gap-1">
-          <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-lg font-black border-2 shadow-lg ${
-            moment.viralScore >= 90
-              ? 'bg-red-600/40 border-red-400 text-white'
-              : 'bg-orange-500/30 border-orange-400 text-orange-200'
-          }`}>
-            {moment.viralScore >= 90 ? '🔥' : '⚡'}
-          </div>
-          <span className="text-white text-[11px] font-bold drop-shadow">{moment.viralScore}%</span>
-        </div>
-
         {/* Like */}
         <motion.button
           onClick={toggleLike}
@@ -193,14 +175,14 @@ function VideoSlide({ moment, isActive, onNext, onPrev, isFirst, isLast }: Slide
         </a>
       </div>
 
-      {/* Bal alsó — videó info */}
+      {/* Bal alsó — cím overlay */}
       <div
         className="absolute bottom-[72px] left-3 right-[72px] sm:left-4 sm:right-[76px] pr-2"
         style={{ zIndex: 30 }}
       >
-        {/* Badge-ek */}
-        <div className="flex flex-wrap items-center gap-1.5 mb-2">
-          {moment.category && (
+        {/* Kategória badge */}
+        {moment.category && (
+          <div className="mb-2">
             <span
               className="text-xs font-bold px-2.5 py-0.5 rounded-full"
               style={{
@@ -211,46 +193,13 @@ function VideoSlide({ moment, isActive, onNext, onPrev, isFirst, isLast }: Slide
             >
               {moment.category.name}
             </span>
-          )}
-          {moment.viralScore >= 90 && (
-            <span className="text-xs font-black bg-red-600/40 text-red-200 border border-red-500/50 px-2 py-0.5 rounded-full tracking-wide">
-              🔥 VIRAL
-            </span>
-          )}
-          {moment.platform === 'shorts' && (
-            <span className="text-xs font-bold bg-white/10 text-white/70 border border-white/20 px-2 py-0.5 rounded-full">
-              SHORTS
-            </span>
-          )}
-        </div>
-
-        {/* Cím */}
-        <h2 className="text-white font-black text-base sm:text-lg leading-snug mb-1 drop-shadow-2xl line-clamp-2">
-          {moment.title}
-        </h2>
-
-        {/* Leírás */}
-        <p className="text-gray-300 text-sm leading-relaxed drop-shadow line-clamp-2 mb-2">
-          {moment.description}
-        </p>
-
-        {/* Meta */}
-        <div className="flex items-center gap-2 text-xs text-gray-400 mb-1.5">
-          <span>{moment.year}</span>
-          <span className="text-gray-600">·</span>
-          <span>{formatDuration(moment.duration)}</span>
-        </div>
-
-        {/* Tagek */}
-        {moment.tags?.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {moment.tags.slice(0, 4).map(tag => (
-              <span key={tag} className="text-[#e50914] text-sm font-medium drop-shadow">
-                #{tag}
-              </span>
-            ))}
           </div>
         )}
+
+        {/* Cím */}
+        <h2 className="text-white font-black text-base sm:text-lg leading-snug drop-shadow-2xl line-clamp-2">
+          {moment.title}
+        </h2>
       </div>
 
       {/* Desktop nyíl gombok */}

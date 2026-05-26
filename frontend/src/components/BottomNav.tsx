@@ -2,10 +2,9 @@ import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
 const tabs = [
-  { to: '/', icon: '🏠', label: 'Feed', exact: true },
-  { to: '/search', icon: '🔍', label: 'Keresés', exact: false },
-  { to: '/pixel', icon: '🎨', label: 'Pixel', exact: false },
-  { to: '/meme', icon: '😂', label: 'Mém', exact: false },
+  { to: '/', icon: '📱', label: 'Shorts', exact: true },
+  { to: '/videos', icon: '🎬', label: 'Videók', exact: false },
+  { to: '/pixel', icon: '🎨', label: 'Pixelart', exact: false },
 ]
 
 export default function BottomNav() {
@@ -18,7 +17,7 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50"
+      className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
       style={{
         background: 'linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.88) 100%)',
         backdropFilter: 'blur(20px)',
@@ -35,7 +34,6 @@ export default function BottomNav() {
               to={tab.to}
               className="flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 relative transition-colors"
             >
-              {/* Active indicator */}
               {active && (
                 <motion.div
                   layoutId="nav-indicator"

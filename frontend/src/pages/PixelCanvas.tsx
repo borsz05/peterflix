@@ -1,13 +1,13 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
-// Navbar removed — TopHeader + BottomNav via App.tsx
 import { isLoggedIn } from '../lib/api'
 import api from '../lib/api'
 import { usePixelSocket } from '../hooks/usePixelSocket'
+import LegalFooter from '../components/LegalFooter'
 
 // ── Konstansok ────────────────────────────────────────────────────────────────
 const BOARD_SIZE    = 100
-const COOLDOWN_MS   = 10_000
+const COOLDOWN_MS   = 5_000   // 5 másodperc
 const COOLDOWN_KEY  = 'peterflix_pixel_cooldown'
 const DEFAULT_COLOR = '#141414'
 
@@ -33,13 +33,12 @@ export default function PixelCanvas() {
   const pixelsRef    = useRef<string[]>(new Array(BOARD_SIZE * BOARD_SIZE).fill(DEFAULT_COLOR))
   // A scrollozható konténer (canvas körüli doboz)
   const containerRef = useRef<HTMLDivElement>(null)
-  // A "szabad terület" mérésére — EGYETLEN wrapper, mindig látható
+  // A fő content terület mérésére (flex-1 wrapper)
   const wrapperRef   = useRef<HTMLDivElement>(null)
 
   const [loaded,        setLoaded]        = useState(false)
   const [selectedColor, setSelectedColor] = useState('#e50914')
   const [zoom,          setZoom]          = useState(1)
-  // squareSize: az aktuálisan mért négyzet oldalhossza px-ben
   const [squareSize,    setSquareSize]    = useState(300)
   const [hoverCoord,    setHoverCoord]    = useState<{ x: number; y: number } | null>(null)
   const [cooldownLeft,  setCooldownLeft]  = useState(0)
@@ -58,23 +57,29 @@ export default function PixelCanvas() {
   useEffect(() => { cooldownLeftRef.current = cooldownLeft }, [cooldownLeft])
   useEffect(() => { selectedColorRef.current = selectedColor }, [selectedColor])
 
-  // ── ResizeObserver — egyetlen wrapperRef mérése ───────────────────────────
+  // ── ResizeObserver — a wrapperRef a fő content területet méri ────────────
+  // Desktop: levonjuk a sidebar (212px) + gap (24px) szélességét
+  // Mobil:   csak width vs height minimum
   useEffect(() => {
     function measure() {
       const el = wrapperRef.current
       if (!el) return
       const { width, height } = el.getBoundingClientRect()
-      const s = Math.floor(Math.min(width, height))
+      const isDesktop = window.innerWidth >= 768
+      const availW = isDesktop ? Math.max(50, width - 212 - 24) : width
+      // Mobilon a controls ~100px-t fog el a height-ból
+      const availH = isDesktop ? height : height - 100
+      const s = Math.floor(Math.min(availW, Math.max(availH, 50)))
       if (s > 20) {
         squareSizeRef.current = s
         setSquareSize(s)
       }
     }
-    // Rövid delay, hogy a flex layout teljesen lerendeződjön
     const t = setTimeout(measure, 30)
     const ro = new ResizeObserver(measure)
     if (wrapperRef.current) ro.observe(wrapperRef.current)
-    return () => { clearTimeout(t); ro.disconnect() }
+    window.addEventListener('resize', measure)
+    return () => { clearTimeout(t); ro.disconnect(); window.removeEventListener('resize', measure) }
   }, [])
 
   // pixel mérete CSS px-ben
@@ -144,7 +149,7 @@ export default function PixelCanvas() {
     onStatus: setWsStatus,
   })
 
-  // ── Cooldown ──────────────────────────────────────────────────────────────
+  // ── Cooldown (5 másodperc) ────────────────────────────────────────────────
   useEffect(() => {
     const tick = () => {
       const last = parseInt(localStorage.getItem(COOLDOWN_KEY) || '0')
@@ -155,7 +160,7 @@ export default function PixelCanvas() {
     return () => clearInterval(id)
   }, [])
 
-  // ── Koordináta (canvas rect alapján — DPR/scale független) ────────────────
+  // ── Koordináta ────────────────────────────────────────────────────────────
   function getCoord(clientX: number, clientY: number) {
     const rect = canvasRef.current!.getBoundingClientRect()
     const ps   = rect.width / BOARD_SIZE
@@ -181,40 +186,29 @@ export default function PixelCanvas() {
   }
 
   // ── Desktop: kattintás + húzás ────────────────────────────────────────────
-  // Kattintás (mozgás nélkül) → pixel lehelyezés
-  // Húzás → pásztázás (pan)
-  const mouseDownRef = useRef<{ x: number; y: number; sl: number; st: number } | null>(null)
+  const mouseDownRef   = useRef<{ x: number; y: number; sl: number; st: number } | null>(null)
   const mouseDraggedRef = useRef(false)
   const [isDragging, setIsDragging] = useState(false)
 
   function handleMouseDown(e: React.MouseEvent<HTMLCanvasElement>) {
-    if (e.button !== 0) return   // csak bal gomb
+    if (e.button !== 0) return
     mouseDraggedRef.current = false
     mouseDownRef.current = {
-      x: e.clientX,
-      y: e.clientY,
+      x: e.clientX, y: e.clientY,
       sl: containerRef.current?.scrollLeft ?? 0,
       st: containerRef.current?.scrollTop  ?? 0,
     }
   }
 
   function handleMouseMove(e: React.MouseEvent<HTMLCanvasElement>) {
-    // Hover koordináta frissítése (ha nem húzunk)
-    if (!mouseDraggedRef.current) {
-      setHoverCoord(getCoord(e.clientX, e.clientY))
-    }
-
+    if (!mouseDraggedRef.current) setHoverCoord(getCoord(e.clientX, e.clientY))
     if (!mouseDownRef.current || !(e.buttons & 1)) return
-
     const dx = e.clientX - mouseDownRef.current.x
     const dy = e.clientY - mouseDownRef.current.y
-
-    // 4px threshold után indítjuk a pant (véletlen el ne mozduljon)
     if (!mouseDraggedRef.current && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
       mouseDraggedRef.current = true
       setIsDragging(true)
     }
-
     if (mouseDraggedRef.current && containerRef.current) {
       containerRef.current.scrollLeft = mouseDownRef.current.sl - dx
       containerRef.current.scrollTop  = mouseDownRef.current.st - dy
@@ -223,7 +217,6 @@ export default function PixelCanvas() {
 
   function handleMouseUp(e: React.MouseEvent<HTMLCanvasElement>) {
     if (e.button !== 0) return
-    // Ha nem volt húzás → pixel lehelyezés
     if (!mouseDraggedRef.current && cooldownLeftRef.current === 0) {
       const { x, y } = getCoord(e.clientX, e.clientY)
       placePixel(x, y, selectedColorRef.current)
@@ -235,7 +228,6 @@ export default function PixelCanvas() {
 
   function handleMouseLeave() {
     setHoverCoord(null)
-    // Ha a kurzor elhagyja a canvast húzás közben → húzást befejezzük
     if (mouseDraggedRef.current) {
       mouseDownRef.current    = null
       mouseDraggedRef.current = false
@@ -243,13 +235,9 @@ export default function PixelCanvas() {
     }
   }
 
-  // ── Mobil: pinch zoom + egy- és kétujjas pan + tap ────────────────────────
-  // 1 ujj tap (mozgás nélkül) → pixel lehelyezés
-  // 1 ujj húzás               → pásztázás
-  // 2 ujj csípés              → zoom
-  // 2 ujj húzás               → pásztázás
-  const pinchRef     = useRef<{ dist: number; startZoom: number } | null>(null)
-  const multiPanRef  = useRef<{ cx: number; cy: number; sl: number; st: number } | null>(null)
+  // ── Mobil: pinch zoom + pan + tap ────────────────────────────────────────
+  const pinchRef       = useRef<{ dist: number; startZoom: number } | null>(null)
+  const multiPanRef    = useRef<{ cx: number; cy: number; sl: number; st: number } | null>(null)
   const singleTouchRef = useRef<{ x: number; y: number; sl: number; st: number; moved: boolean } | null>(null)
 
   function pinchDist(t: React.TouchList) {
@@ -258,18 +246,14 @@ export default function PixelCanvas() {
 
   function handleTouchStart(e: React.TouchEvent<HTMLCanvasElement>) {
     if (e.touches.length === 1) {
-      // Egyujjas: tap vagy pan
       singleTouchRef.current = {
-        x:     e.touches[0].clientX,
-        y:     e.touches[0].clientY,
-        sl:    containerRef.current?.scrollLeft ?? 0,
-        st:    containerRef.current?.scrollTop  ?? 0,
+        x: e.touches[0].clientX, y: e.touches[0].clientY,
+        sl: containerRef.current?.scrollLeft ?? 0,
+        st: containerRef.current?.scrollTop  ?? 0,
         moved: false,
       }
-      pinchRef.current    = null
-      multiPanRef.current = null
+      pinchRef.current = null; multiPanRef.current = null
     } else if (e.touches.length === 2) {
-      // Kétujjas: pinch + pan
       singleTouchRef.current = null
       pinchRef.current = { dist: pinchDist(e.touches), startZoom: zoomRef.current }
       multiPanRef.current = {
@@ -283,27 +267,20 @@ export default function PixelCanvas() {
 
   function handleTouchMove(e: React.TouchEvent<HTMLCanvasElement>) {
     e.preventDefault()
-
     if (e.touches.length === 1 && singleTouchRef.current) {
-      // Egyujjas pan
-      const t  = e.touches[0]
+      const t = e.touches[0]
       const dx = t.clientX - singleTouchRef.current.x
       const dy = t.clientY - singleTouchRef.current.y
-
-      if (!singleTouchRef.current.moved && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+      if (!singleTouchRef.current.moved && (Math.abs(dx) > 5 || Math.abs(dy) > 5))
         singleTouchRef.current.moved = true
-      }
       if (singleTouchRef.current.moved && containerRef.current) {
         containerRef.current.scrollLeft = singleTouchRef.current.sl - dx
         containerRef.current.scrollTop  = singleTouchRef.current.st - dy
       }
-
     } else if (e.touches.length === 2 && pinchRef.current) {
-      // Kétujjas: zoom
       const ratio   = pinchDist(e.touches) / pinchRef.current.dist
       const snapped = Math.max(1, Math.min(6, Math.round(pinchRef.current.startZoom * ratio)))
       if (snapped !== zoomRef.current) setZoom(snapped)
-      // Kétujjas: pan
       if (multiPanRef.current && containerRef.current) {
         const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2
         const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2
@@ -315,8 +292,6 @@ export default function PixelCanvas() {
 
   function handleTouchEnd(e: React.TouchEvent<HTMLCanvasElement>) {
     if (e.touches.length < 2) { pinchRef.current = null; multiPanRef.current = null }
-
-    // Tap (egyujjas, nem mozdult) → pixel lehelyezés
     if (
       singleTouchRef.current &&
       !singleTouchRef.current.moved &&
@@ -378,7 +353,7 @@ export default function PixelCanvas() {
     )
   }
 
-  // ── Canvas konténer (közös) ───────────────────────────────────────────────
+  // ── Canvas konténer ───────────────────────────────────────────────────────
   const canvasContainer = (
     <div
       ref={containerRef}
@@ -392,7 +367,7 @@ export default function PixelCanvas() {
       {!loaded ? (
         <div
           className="flex items-center justify-center text-gray-600 text-sm"
-          style={{ width: squareSize * zoom, height: squareSize * zoom }}
+          style={{ width: squareSize, height: squareSize }}
         >
           ⏳ Betöltés…
         </div>
@@ -422,178 +397,181 @@ export default function PixelCanvas() {
     </div>
   )
 
+  // ── Desktop sidebar tartalma ──────────────────────────────────────────────
+  const desktopSidebar = (
+    <div className="hidden md:flex flex-col gap-3 flex-shrink-0 overflow-y-auto pb-2" style={{ width: 212 }}>
+      <div className={`text-xs px-2.5 py-1.5 rounded-full text-center border font-medium ${
+        wsStatus === 'connected'
+          ? 'text-green-400 border-green-500/25 bg-green-500/8'
+          : 'text-gray-500 border-white/10'
+      }`}>
+        {wsStatus === 'connected' ? '🟢 Valós idejű szinkron' : '⚪ Csatlakozás…'}
+      </div>
+
+      <div>
+        <motion.div
+          className={`px-3 py-2 rounded-xl text-sm font-semibold border text-center ${
+            canPlace
+              ? 'bg-green-500/15 text-green-400 border-green-500/30'
+              : 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30'
+          }`}
+          animate={justPlaced ? { scale: [1, 1.1, 1] } : {}}
+          transition={{ duration: 0.3 }}
+        >
+          {canPlace ? '✓ Rajzolhatsz!' : `⏳ ${cooldownSecs}mp`}
+        </motion.div>
+        {cooldownLeft > 0 && (
+          <div className="mt-1.5 h-1 bg-gray-800 rounded-full overflow-hidden">
+            <div className="h-full bg-yellow-400 rounded-full transition-[width]" style={{ width: `${pct}%` }} />
+          </div>
+        )}
+      </div>
+
+      <div>
+        <p className="text-gray-600 text-[10px] uppercase tracking-wider mb-1">Szín</p>
+        <div className="flex items-center gap-2 bg-white/5 rounded-lg px-2.5 py-2 border border-white/8">
+          <div className="w-4 h-4 rounded-full border border-white/20" style={{ background: selectedColor }} />
+          <span className="text-gray-400 text-xs font-mono">{selectedColor}</span>
+        </div>
+      </div>
+
+      <div>
+        <p className="text-gray-600 text-[10px] uppercase tracking-wider mb-1">Paletta</p>
+        <PaletteGrid cols={4} />
+      </div>
+
+      <div>
+        <p className="text-gray-600 text-[10px] uppercase tracking-wider mb-1">Zoom</p>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setZoom(z => Math.max(1, z - 1))} disabled={zoom <= 1}
+            className="w-8 h-8 rounded bg-white/8 hover:bg-white/15 text-white flex items-center justify-center font-bold text-lg disabled:opacity-25">−</button>
+          <span className="text-gray-300 text-sm font-mono flex-1 text-center">{zoom}×</span>
+          <button onClick={() => setZoom(z => Math.min(6, z + 1))} disabled={zoom >= 6}
+            className="w-8 h-8 rounded bg-white/8 hover:bg-white/15 text-white flex items-center justify-center font-bold text-lg disabled:opacity-25">+</button>
+        </div>
+      </div>
+
+      <div className="bg-white/5 rounded-lg px-2.5 py-2 border border-white/8 text-xs font-mono text-gray-500 min-h-[34px]">
+        {hoverCoord
+          ? <><span className="text-gray-300">X:</span> {hoverCoord.x}  <span className="text-gray-300">Y:</span> {hoverCoord.y}</>
+          : <span className="text-gray-700">Vidd a kurzort…</span>}
+      </div>
+
+      {adminLoggedIn && (
+        <button onClick={handleReset}
+          className="text-xs text-red-400 border border-red-500/25 hover:bg-red-500/10 rounded-lg px-3 py-2 transition-colors text-center">
+          🗑 Vászon törlése
+        </button>
+      )}
+    </div>
+  )
+
   // ══════════════════════════════════════════════════════════════════════════
   // RENDER
   // ══════════════════════════════════════════════════════════════════════════
   return (
-    <div
-      className="bg-[#0a0a0a] flex flex-col select-none"
-      style={{ height: '100dvh', overflow: 'hidden' }}
-    >
-      {/* TopHeader spacer */}
-      <div style={{ height: 50, flexShrink: 0 }} />
+    <div className="bg-[#0a0a0a] select-none">
+      {/* ── Fő canvas terület (100dvh) ───────────────────────────────────── */}
+      <div
+        className="flex flex-col"
+        style={{ height: '100dvh', overflow: 'hidden' }}
+      >
+        {/* TopHeader spacer */}
+        <div style={{ height: 50, flexShrink: 0 }} />
 
-      <div className="flex flex-col flex-1 min-h-0 px-3 sm:px-4" style={{ overflow: 'hidden' }}>
+        <div className="flex flex-col flex-1 min-h-0 px-3 sm:px-4" style={{ overflow: 'hidden' }}>
 
-        {/* Fejléc */}
-        <div className="flex-shrink-0 pt-1 pb-2">
-          <h1 className="text-lg font-black text-white leading-tight">
-            🎨 Pixel<span className="text-[#e50914]">Csata</span>
-          </h1>
-          <p className="text-gray-600 text-[10px]">
-            Közösségi vászon · {BOARD_SIZE}×{BOARD_SIZE} · valós idejű szinkron
-          </p>
-        </div>
-
-        {/* ═══ Fő terület — col mobilon, row desktopon ═══ */}
-        <div className="flex-1 min-h-0 flex flex-col md:flex-row gap-3 overflow-hidden">
-
-          {/* ── Mobil kontrollok (felül, csak mobilon) ── */}
-          <div className="md:hidden flex-shrink-0 flex flex-col gap-2">
-
-            {/* Sor 1: státusz + cooldown + zoom + szín */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${
-                wsStatus === 'connected'
-                  ? 'text-green-400 border-green-500/25 bg-green-500/8'
-                  : 'text-gray-500 border-white/10'
-              }`}>
-                {wsStatus === 'connected' ? '🟢 Élő' : '⚪ Offline'}
-              </span>
-
-              <motion.span
-                className={`text-xs px-2.5 py-0.5 rounded-full font-semibold border ${
-                  canPlace
-                    ? 'bg-green-500/15 text-green-400 border-green-500/30'
-                    : 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30'
-                }`}
-                animate={justPlaced ? { scale: [1, 1.12, 1] } : {}}
-                transition={{ duration: 0.3 }}
-              >
-                {canPlace ? '✓ Rajzolhatsz!' : `⏳ ${cooldownSecs}mp`}
-              </motion.span>
-
-              <div className="flex items-center gap-1 ml-auto">
-                <button onClick={() => setZoom(z => Math.max(1, z - 1))} disabled={zoom <= 1}
-                  className="w-6 h-6 rounded bg-white/8 hover:bg-white/15 text-white text-sm font-bold disabled:opacity-25">−</button>
-                <span className="text-gray-300 text-xs font-mono w-6 text-center">{zoom}×</span>
-                <button onClick={() => setZoom(z => Math.min(6, z + 1))} disabled={zoom >= 6}
-                  className="w-6 h-6 rounded bg-white/8 hover:bg-white/15 text-white text-sm font-bold disabled:opacity-25">+</button>
-              </div>
-
-              <div className="flex items-center gap-1.5">
-                <div className="w-4 h-4 rounded-full border border-white/20 flex-shrink-0" style={{ background: selectedColor }} />
-                <span className="text-gray-400 text-[10px] font-mono">{selectedColor}</span>
-              </div>
-            </div>
-
-            {/* Cooldown progress */}
-            {cooldownLeft > 0 && (
-              <div className="h-0.5 bg-gray-800 rounded-full overflow-hidden">
-                <div className="h-full bg-yellow-400 rounded-full transition-[width]" style={{ width: `${pct}%` }} />
-              </div>
-            )}
-
-            {/* Paletta — teljes szélességben, 13 oszlop */}
-            <PaletteGrid cols={13} />
+          {/* Fejléc */}
+          <div className="flex-shrink-0 pt-1 pb-2">
+            <h1 className="text-lg font-black text-white leading-tight">
+              🎨 Pixel<span className="text-[#e50914]">Csata</span>
+            </h1>
+            <p className="text-gray-600 text-[10px]">
+              Közösségi vászon · {BOARD_SIZE}×{BOARD_SIZE} · valós idejű szinkron
+            </p>
           </div>
 
-          {/* ── Canvas wrapper (EGYETLEN, mindig megjelenik) ── */}
-          {/*
-            flex-1 + min-h-0 = tölti a maradék helyet (mobilon: magasság, desktopon: szélesség)
-            items-center justify-center = a négyzetes konténer középre kerül
-          */}
+          {/* ═══ Fő terület — wrapperRef méri az egész területet ═══ */}
           <div
             ref={wrapperRef}
-            className="flex-1 min-h-0 flex items-center justify-center md:justify-start"
+            className="flex-1 min-h-0 flex flex-col md:flex-row md:items-center md:justify-center gap-3 md:gap-6 overflow-hidden"
           >
-            {canvasContainer}
-          </div>
 
-          {/* ── Desktop sidebar (csak desktopon, jobbra) ── */}
-          <div className="hidden md:flex flex-col gap-3 flex-shrink-0 overflow-y-auto pb-2" style={{ width: 212 }}>
+            {/* ── Mobil kontrollok (felül, csak mobilon) ── */}
+            <div className="md:hidden flex-shrink-0 flex flex-col gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${
+                  wsStatus === 'connected'
+                    ? 'text-green-400 border-green-500/25 bg-green-500/8'
+                    : 'text-gray-500 border-white/10'
+                }`}>
+                  {wsStatus === 'connected' ? '🟢 Élő' : '⚪ Offline'}
+                </span>
 
-            <div className={`text-xs px-2.5 py-1.5 rounded-full text-center border font-medium ${
-              wsStatus === 'connected'
-                ? 'text-green-400 border-green-500/25 bg-green-500/8'
-                : 'text-gray-500 border-white/10'
-            }`}>
-              {wsStatus === 'connected' ? '🟢 Valós idejű szinkron' : '⚪ Csatlakozás…'}
-            </div>
+                <motion.span
+                  className={`text-xs px-2.5 py-0.5 rounded-full font-semibold border ${
+                    canPlace
+                      ? 'bg-green-500/15 text-green-400 border-green-500/30'
+                      : 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30'
+                  }`}
+                  animate={justPlaced ? { scale: [1, 1.12, 1] } : {}}
+                  transition={{ duration: 0.3 }}
+                >
+                  {canPlace ? '✓ Rajzolhatsz!' : `⏳ ${cooldownSecs}mp`}
+                </motion.span>
 
-            <div>
-              <motion.div
-                className={`px-3 py-2 rounded-xl text-sm font-semibold border text-center ${
-                  canPlace
-                    ? 'bg-green-500/15 text-green-400 border-green-500/30'
-                    : 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30'
-                }`}
-                animate={justPlaced ? { scale: [1, 1.1, 1] } : {}}
-                transition={{ duration: 0.3 }}
-              >
-                {canPlace ? '✓ Rajzolhatsz!' : `⏳ ${cooldownSecs}mp`}
-              </motion.div>
+                <div className="flex items-center gap-1 ml-auto">
+                  <button onClick={() => setZoom(z => Math.max(1, z - 1))} disabled={zoom <= 1}
+                    className="w-6 h-6 rounded bg-white/8 hover:bg-white/15 text-white text-sm font-bold disabled:opacity-25">−</button>
+                  <span className="text-gray-300 text-xs font-mono w-6 text-center">{zoom}×</span>
+                  <button onClick={() => setZoom(z => Math.min(6, z + 1))} disabled={zoom >= 6}
+                    className="w-6 h-6 rounded bg-white/8 hover:bg-white/15 text-white text-sm font-bold disabled:opacity-25">+</button>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 rounded-full border border-white/20 flex-shrink-0" style={{ background: selectedColor }} />
+                  <span className="text-gray-400 text-[10px] font-mono">{selectedColor}</span>
+                </div>
+              </div>
+
               {cooldownLeft > 0 && (
-                <div className="mt-1.5 h-1 bg-gray-800 rounded-full overflow-hidden">
+                <div className="h-0.5 bg-gray-800 rounded-full overflow-hidden">
                   <div className="h-full bg-yellow-400 rounded-full transition-[width]" style={{ width: `${pct}%` }} />
                 </div>
               )}
+
+              <PaletteGrid cols={13} />
             </div>
 
-            <div>
-              <p className="text-gray-600 text-[10px] uppercase tracking-wider mb-1">Szín</p>
-              <div className="flex items-center gap-2 bg-white/5 rounded-lg px-2.5 py-2 border border-white/8">
-                <div className="w-4 h-4 rounded-full border border-white/20" style={{ background: selectedColor }} />
-                <span className="text-gray-400 text-xs font-mono">{selectedColor}</span>
-              </div>
+            {/* ── Canvas wrapper ──────────────────────────────────────────── */}
+            {/* Mobilon flex-1 (tölti a maradék helyet), desktopon flex-none (squareSize alapú) */}
+            <div className="flex-1 min-h-0 md:flex-none flex items-center justify-center">
+              {canvasContainer}
             </div>
 
-            <div>
-              <p className="text-gray-600 text-[10px] uppercase tracking-wider mb-1">Paletta</p>
-              <PaletteGrid cols={4} />
-            </div>
+            {/* ── Desktop sidebar ─────────────────────────────────────────── */}
+            {desktopSidebar}
 
-            <div>
-              <p className="text-gray-600 text-[10px] uppercase tracking-wider mb-1">Zoom</p>
-              <div className="flex items-center gap-2">
-                <button onClick={() => setZoom(z => Math.max(1, z - 1))} disabled={zoom <= 1}
-                  className="w-8 h-8 rounded bg-white/8 hover:bg-white/15 text-white flex items-center justify-center font-bold text-lg disabled:opacity-25">−</button>
-                <span className="text-gray-300 text-sm font-mono flex-1 text-center">{zoom}×</span>
-                <button onClick={() => setZoom(z => Math.min(6, z + 1))} disabled={zoom >= 6}
-                  className="w-8 h-8 rounded bg-white/8 hover:bg-white/15 text-white flex items-center justify-center font-bold text-lg disabled:opacity-25">+</button>
-              </div>
-            </div>
-
-            <div className="bg-white/5 rounded-lg px-2.5 py-2 border border-white/8 text-xs font-mono text-gray-500 min-h-[34px]">
-              {hoverCoord
-                ? <><span className="text-gray-300">X:</span> {hoverCoord.x}  <span className="text-gray-300">Y:</span> {hoverCoord.y}</>
-                : <span className="text-gray-700">Vidd a kurzort…</span>}
-            </div>
-
-            {adminLoggedIn && (
-              <button onClick={handleReset}
-                className="text-xs text-red-400 border border-red-500/25 hover:bg-red-500/10 rounded-lg px-3 py-2 transition-colors text-center">
-                🗑 Vászon törlése
-              </button>
-            )}
           </div>
+
+          {/* Admin gomb mobilon */}
+          {adminLoggedIn && (
+            <div className="md:hidden flex-shrink-0 py-2">
+              <button onClick={handleReset}
+                className="w-full text-xs text-red-400 border border-red-500/25 hover:bg-red-500/10 rounded-lg px-3 py-1.5 transition-colors">
+                🗑 Vászon törlése (admin)
+              </button>
+            </div>
+          )}
 
         </div>
 
-        {/* Admin gomb mobilon (alul) */}
-        {adminLoggedIn && (
-          <div className="md:hidden flex-shrink-0 py-2">
-            <button onClick={handleReset}
-              className="w-full text-xs text-red-400 border border-red-500/25 hover:bg-red-500/10 rounded-lg px-3 py-1.5 transition-colors">
-              🗑 Vászon törlése (admin)
-            </button>
-          </div>
-        )}
-
+        {/* BottomNav spacer — csak mobilon */}
+        <div className="md:hidden" style={{ height: 64, flexShrink: 0 }} />
       </div>
 
-      {/* BottomNav spacer */}
-      <div style={{ height: 64, flexShrink: 0 }} />
+      {/* ── Jogi nyilatkozat — az oldal alján, görgethető ───────────────── */}
+      <LegalFooter />
     </div>
   )
 }
