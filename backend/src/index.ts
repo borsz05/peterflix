@@ -25,9 +25,15 @@ app.use(helmet())
 app.set('trust proxy', 1)
 
 // ── CORS ─────────────────────────────────────────────────────────────────────
-// Productionban csak a saját domain, dev-ben minden origin (mobil tesztelés)
-const allowedOrigins = process.env.FRONTEND_URL
-  ? [process.env.FRONTEND_URL, `https://www.${process.env.FRONTEND_URL.replace(/^https?:\/\//, '')}`]
+// FRONTEND_URL lehet vesszővel elválasztott lista is:
+// pl. "https://peterflix.hu,https://peterflix.netlify.app"
+// Dev-ben (nincs env) minden origin OK
+const allowedOrigins: string[] | boolean = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(',').flatMap(url => {
+      const u = url.trim()
+      const bare = u.replace(/^https?:\/\//, '')
+      return [u, `https://www.${bare}`, `http://www.${bare}`]
+    })
   : true
 app.use(cors({ origin: allowedOrigins }))
 
