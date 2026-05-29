@@ -7,7 +7,7 @@ import LegalFooter from '../components/LegalFooter'
 
 // ── Konstansok ────────────────────────────────────────────────────────────────
 const BOARD_SIZE    = 100
-const COOLDOWN_MS   = 5_000   // 5 másodperc
+const COOLDOWN_MS   = 3_000   // 3 másodperc
 const COOLDOWN_KEY  = 'peterflix_pixel_cooldown'
 const DEFAULT_COLOR = '#141414'
 
@@ -405,7 +405,7 @@ export default function PixelCanvas() {
           ? 'text-green-400 border-green-500/25 bg-green-500/8'
           : 'text-gray-500 border-white/10'
       }`}>
-        {wsStatus === 'connected' ? '🟢 Valós idejű szinkron' : '⚪ Csatlakozás…'}
+        {wsStatus === 'connected' ? '🟢 Csatlakozva' : '⚪ Csatlakozás…'}
       </div>
 
       <div>
